@@ -2,7 +2,7 @@ import { GetPicApi } from './js/getPicApi';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import simpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import makeGalleryPic from './js/makeGallery'
+import makeGalleryPic from './js/makeGallery';
 
 Notify.init({
   width: '300px',
@@ -27,7 +27,6 @@ searchForm.addEventListener('submit', onSearch);
 
 const getPicApi = new GetPicApi();
 
-
 function renderGallery(searchImages) {
   galleryForm.insertAdjacentHTML('beforeend', makeGalleryPic(searchImages));
 }
@@ -35,16 +34,17 @@ function renderGallery(searchImages) {
 async function getData() {
   try {
     const { hits, totalHits } = await getPicApi.fetchPhoto();
-    if (totalHits > 0) {
+    const lastPage = totalHits / 40;
+    if (getPicApi.page > lastPage) {
+      return Notify.failure(
+        `We're sorry, but you've reached the end of search results.`
+      );
+    } else {
       Notify.success(`New images loaded`);
       renderGallery(hits);
       lightBox.refresh();
     }
   } catch (error) {
-    console.log(error);
-    if (error.response.status === 400) {
-      Notify.failure(`We're sorry, but you've reached the end of search results.`);
-    }
     console.log(error.message);
   }
 }
@@ -64,7 +64,7 @@ async function onSearch(e) {
     }
 
     if (totalHits > 0) {
-      Notify.success(`Founded ${totalHits} images.`);
+      Notify.success(`Hooray! We found ${totalHits} images.`);
       renderGallery(hits);
       lightBox.refresh();
     }
