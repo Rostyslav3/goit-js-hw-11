@@ -2,6 +2,7 @@ import { GetPicApi } from './js/getPicApi';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import simpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import makeGalleryPic from './js/makeGallery'
 
 Notify.init({
   width: '300px',
@@ -26,52 +27,6 @@ searchForm.addEventListener('submit', onSearch);
 
 const getPicApi = new GetPicApi();
 
-function makeGalleryPic(searchImages) {
-  return searchImages
-    .map(
-      ({
-        largeImageURL,
-        webformatURL,
-        tags,
-        likes,
-        views,
-        comments,
-        downloads,
-      }) => ` 
-      <a href="${largeImageURL}">
-  <div class="photo-card">
-    <img
-      src="${webformatURL}"
-      alt="${tags}"
-      loading="lazy"
-      width="280px"
-      height="200px"
-    />
-    <div class="info">
-      <p class="info-item">
-        <b>Likes:</b>
-        <b>${likes}</b>
-      </p>
-      <p class="info-item">
-        <b>Views: </b>
-        <b>${views}</b>
-      </p>
-      <p class="info-item">
-        <b>Comments: </b>
-        <b>${comments}</b>
-      </p>
-      <p class="info-item">
-        <b>Downloads: </b>
-        <b>${downloads}</b>
-      </p>
-    </div>
-  </div>
-  </a>
-
-`
-    )
-    .join('');
-}
 
 function renderGallery(searchImages) {
   galleryForm.insertAdjacentHTML('beforeend', makeGalleryPic(searchImages));
