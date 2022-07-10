@@ -34,8 +34,8 @@ function renderGallery(searchImages) {
 async function getData() {
   try {
     const { hits, totalHits } = await getPicApi.fetchPhoto();
-    const lastPage = totalHits / 40;
-    if (getPicApi.page > lastPage) {
+    const lastPage = totalHits / getPicApi.page < getPicApi.per_page;
+    if (hits.length === 0 && lastPage) {
       return Notify.failure(
         `We're sorry, but you've reached the end of search results.`
       );
@@ -84,16 +84,15 @@ function clearSearchForm() {
   galleryForm.innerHTML = '';
 }
 
-// function scrollSmoothly() {
-//   const { height: cardHeight } = document
-//     .querySelector('.gallery')
-//     .firstElementChild.getBoundingClientRect();
-// console.log(cardHeight)
-//   window.scrollBy({
-//     top: cardHeight * 2,
-//     behavior: 'smooth',
-//   });
-// }
+function scrollSmoothly() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
+}
 
 const scrollOptions = {
   rootMargin: '200px',
@@ -108,7 +107,7 @@ const observer = new IntersectionObserver(entries => {
     ) {
       getPicApi.fetchPhoto.page += 1;
       getData();
-      // scrollSmoothly();
+      scrollSmoothly();
     }
   });
 }, scrollOptions);
